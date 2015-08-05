@@ -16,7 +16,6 @@ describe('minimist', function () {
     cli.parse(['--a', '--b'])
       .use(function (argv) {
         argv.foo = 'bar';
-        return argv;
       });
 
     assert.equal(cli.argv.foo === 'bar', true);
@@ -28,11 +27,9 @@ describe('minimist', function () {
     cli.parse(['--a', '--b'])
       .use(function (argv) {
         argv.foo = 'bar';
-        return argv;
       })
       .use(function (argv) {
         argv.baz = 'quux';
-        return argv;
       });
 
     assert.equal(cli.argv.foo === 'bar', true);
