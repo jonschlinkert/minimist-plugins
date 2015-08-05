@@ -1,0 +1,57 @@
+{
+  "name": "minimist-plugins",
+  "description": "Simple wrapper to make minimist pluggable. ~20 sloc.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/jonschlinkert/minimist-plugins",
+  "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
+  "repository": "jonschlinkert/minimist-plugins",
+  "bugs": {
+    "url": "https://github.com/jonschlinkert/minimist-plugins/issues"
+  },
+  "license": "MIT",
+  "files": [
+    "index.js"
+  ],
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "dependencies": {
+    "minimist": "^1.1.2"
+  },
+  "devDependencies": {
+    "minimist-events": "^0.1.0",
+    "mocha": "*"
+  },
+  "keywords": [
+    "args",
+    "argument",
+    "argv",
+    "cli",
+    "command",
+    "command-line",
+    "commands",
+    "emit",
+    "emitter",
+    "event",
+    "line",
+    "listen",
+    "listener",
+    "minimist",
+    "options",
+    "parse",
+    "parser",
+    "plugin"
+  ],
+  "verb": {
+    "related": {
+      "list": [
+        "minimist",
+        "minimist-events"
+      ]
+    }
+  }
+}
