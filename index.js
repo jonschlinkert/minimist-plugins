@@ -7,22 +7,28 @@
 
 'use strict';
 
-module.exports = function(minimist) {
+var extend = require('extend-shallow');
+
+module.exports = function (minimist) {
   if (typeof minimist !== 'function') {
     throw new TypeError('expected minimist to be a function.');
   }
 
   var fn = minimist.parse || minimist;
-  var plugins = {};
+  function proxy() {
+    return fn.apply(fn, arguments);
+  }
 
-  plugins.parse = function () {
-    plugins.argv = fn.apply(fn, arguments);
-    return plugins;
+  extend(proxy, minimist);
+
+  proxy.parse = function () {
+    proxy.argv = proxy.apply(proxy, arguments);
+    return proxy;
   };
 
-  plugins.use = function (fn) {
-    plugins.argv = fn(plugins.argv);
-    return plugins;
+  proxy.use = function (fn) {
+    fn(proxy.argv);
+    return proxy;
   };
-  return plugins;
+  return proxy;
 };
