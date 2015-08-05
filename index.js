@@ -27,7 +27,7 @@ module.exports = function (minimist) {
   };
 
   proxy.use = function (fn) {
-    fn(proxy.argv);
+    proxy.argv = fn(proxy.argv) || proxy.argv;
     return proxy;
   };
   return proxy;
