@@ -7,28 +7,21 @@
 
 'use strict';
 
-var extend = require('extend-shallow');
+var forward = require('forward-object');
 
 module.exports = function (minimist) {
   if (typeof minimist !== 'function') {
     throw new TypeError('expected minimist to be a function.');
   }
 
-  var fn = minimist.parse || minimist;
   function proxy() {
-    return fn.apply(fn, arguments);
+    return minimist.apply(minimist, arguments);
   }
 
-  extend(proxy, minimist);
-
-  proxy.parse = function () {
-    proxy.argv = proxy.apply(proxy, arguments);
-    return proxy;
-  };
-
   proxy.use = function (fn) {
-    proxy.argv = fn(proxy.argv) || proxy.argv;
-    return proxy;
+    return (proxy = (fn(proxy) || proxy));
   };
+
+  forward(proxy, minimist);
   return proxy;
 };
