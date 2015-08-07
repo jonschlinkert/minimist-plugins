@@ -7,21 +7,49 @@
 
 'use strict';
 
-var forward = require('forward-object');
+var isObject = require('is-extendable');
+var extend = require('extend-shallow');
 
-module.exports = function (minimist) {
-  if (typeof minimist !== 'function') {
-    throw new TypeError('expected minimist to be a function.');
+function MinimistPlugins(minimist, opts) {
+  if (!(this instanceof MinimistPlugins)) {
+    return new MinimistPlugins(minimist, opts);
+  }
+  if (!isObject(minimist)) {
+    throw new TypeError('expect `minimist` to be function or object');
   }
 
-  function proxy() {
-    return minimist.apply(minimist, arguments);
+  this.minimist = minimist;
+  this.options = isObject(opts) ? opts : {};
+  this.plugins = [];
+}
+
+MinimistPlugins.prototype.use = function use(plugin) {
+  this.plugins.push(plugin);
+  return this;
+}
+
+MinimistPlugins.prototype.parse = function parse(args, opts) {
+  if (arguments.length === 1 && (!Array.isArray(args) && typeof args === 'object')) {
+    opts = args;
+    args = false;
   }
+  this.options = extend({}, this.options, opts);
+  this.args = args || this.options.args || process.argv.slice(2);
+  this.argv = this.minimist.call(this.minimist, this.args, this.options);
 
-  proxy.use = function (fn) {
-    return (proxy = (fn(proxy) || proxy));
-  };
+  var len = this.plugins.length;
+  var i = 0;
 
-  forward(proxy, minimist);
-  return proxy;
-};
+  while (i < len) {
+    var plugin = this.plugins[i++];
+    plugin.call(this, this.argv, this.args, this.options);
+  }
+  return this;
+}
+
+/**
+ * expose
+ */
+
+module.exports = MinimistPlugins;
+
