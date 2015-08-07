@@ -1,12 +1,7 @@
 var cli = require('..')(require('minimist'))
-
-cli.parse(process.argv.slice(2))
-  .use(function (argv) {
-    return argv;
-  })
-  .use(function (argv) {
-    return argv;
+  .use(function (parser) {
+    return parser;
   })
 
-var argv = cli.argv;
-console.log(cli);
+var argv = cli(['--a=b']);
+console.log(argv);

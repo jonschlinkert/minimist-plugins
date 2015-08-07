@@ -1,27 +1,16 @@
-var minimist = require('minimist-events')(require('minimist'));
-var cli = require('..')(minimist);
+var minimist = require('minimist');
+var cli = require('..')(minimist)
+  .use(require('minimist-events'))
 
-cli.on('foo', function (val) {
-  console.log('foo:', val);
-});
+cli.on('foo', console.log.bind(console, '[foo]'));
+cli.on('bar', console.log.bind(console, '[bar]'));
+cli.on('baz', console.log.bind(console, '[baz]'));
 
-cli.on('bar', function (val) {
-  console.log('bar:', val);
-});
+cli.on(0, console.log.bind(console, '[0]'));
+cli.on(1, console.log.bind(console, '[1]'));
+cli.on(2, console.log.bind(console, '[2]'));
 
-cli.on('baz', function (val) {
-  console.log('whooohooo!:', val);
-});
+var args = process.argv.slice(2);
+var argv = cli(args.length ? args : ['foo', 'bar', 'baz']);
 
-cli.parse(process.argv.slice(2))
-  .use(function (argv) {
-    cli.emit('baz', 'whatever');
-    return argv;
-  })
-  .use(function (argv) {
-    console.log(argv)
-    return argv;
-  })
-
-var argv = cli.argv;
 console.log(argv);
