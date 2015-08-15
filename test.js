@@ -80,6 +80,9 @@ describe('minimist', function () {
     cli.use(set('eee', 'fff'))
 
     cli.on('end', function (argv) {
+      assert.equal(argv.aaa, 'bbb');
+      assert.equal(argv.ccc, 'ddd');
+      assert.equal(argv.eee, 'fff');
       i++;
     });
 
