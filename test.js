@@ -149,5 +149,25 @@ describe('minimist', function () {
       assert.equal(cli.options.baz, 'qux');
       done();
     });
-  })
+  });
+
+  it('should be able to emit events from plugins', function (done) {
+    var i = 0;
+    cli.use(function (self) {
+      return function (argv, next) {
+        self.emit('custom', argv.foo);
+        i++;
+        next(null, argv)
+      };
+    });
+    cli.on('custom', function (foo) {
+      assert.equal(foo, 'bar');
+      i++;
+    });
+    cli.parse(['--foo=bar'], function (err, argv) {
+      assert.equal(i, 2);
+      assert.equal(argv.foo, 'bar');
+      done();
+    });
+  });
 });
