@@ -23,6 +23,7 @@ describe('minimist', function () {
 
   it('should parse arguments without any plugins:', function (done) {
     cli.parse(['--a', '--b'], function (err, argv) {
+      assert.ifError(err);
       assert.equal(argv.a, true);
       assert.equal(argv.b, true);
       done();
@@ -42,6 +43,7 @@ describe('minimist', function () {
       });
 
     cli.parse(['--a', '--b'], function (err, argv) {
+      assert.ifError(err);
       assert.equal(argv.foo === 'bar', true);
       assert.equal(argv.baz === 'quux', true);
       assert.equal(argv.a === true, true);
@@ -52,6 +54,7 @@ describe('minimist', function () {
 
   it('should expose args on the `argv` object:', function (done) {
     cli.parse(['a', 'b', 'c'], function (err, res) {
+      assert.ifError(err);
       assert.deepEqual(res._, ['a', 'b', 'c']);
       done();
     });
@@ -59,6 +62,7 @@ describe('minimist', function () {
 
   it('should expose options on the `argv` object:', function (done) {
     cli.parse(['a', 'b', 'c', '--foo=bar'], function (err, res) {
+      assert.ifError(err);
       assert.equal(res.foo, 'bar');
       done();
     });
@@ -87,6 +91,7 @@ describe('minimist', function () {
     });
 
     cli.parse(['a', 'b', 'c', '--foo=bar'], function (err, argv) {
+      assert.ifError(err);
       assert.equal(i, 1);
       assert.equal(argv.aaa, 'bbb');
       assert.equal(argv.ccc, 'ddd');
@@ -144,6 +149,7 @@ describe('minimist', function () {
     });
 
     cli.parse(['--abc=def'], function (err, argv) {
+      assert.ifError(err);
       assert.equal(argv.abc, 'def');
       assert.equal(cli.options.foo, 'abc');
       assert.equal(cli.options.baz, 'qux');
@@ -165,6 +171,7 @@ describe('minimist', function () {
       i++;
     });
     cli.parse(['--foo=bar'], function (err, argv) {
+      assert.ifError(err);
       assert.equal(i, 2);
       assert.equal(argv.foo, 'bar');
       done();
