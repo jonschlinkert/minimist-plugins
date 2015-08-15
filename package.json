@@ -1,7 +1,7 @@
 {
   "name": "minimist-plugins",
   "description": "Simple wrapper to make minimist pluggable. ~20 sloc.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "homepage": "https://github.com/jonschlinkert/minimist-plugins",
   "author": "Jon Schlinkert (https://github.com/jonschlinkert)",
   "repository": "jonschlinkert/minimist-plugins",
@@ -20,7 +20,8 @@
     "test": "mocha"
   },
   "dependencies": {
-    "forward-object": "^0.1.0"
+    "component-emitter": "^1.2.0",
+    "plugins": "^0.4.0"
   },
   "devDependencies": {
     "collection-visit": "^0.1.1",
