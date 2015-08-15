@@ -1,13 +1,16 @@
 var app = require('./app');
+
 var one = new app.App();
 var two = new app.App();
+
 var methods = require('minimist-methods');
 var cli = require('..')(require('minimist'))
   .use(require('minimist-expand'))
   .use(require('minimist-events'))
   .use(methods(app))
   .use(methods.namespace('one', one))
-  .use(methods.namespace('two', two))
+  .use(methods.namespace('two', two));
+
 
 var help = {
   init: {},
@@ -49,6 +52,7 @@ cli.one.on('set', function () {
 cli.two.on('set', function () {
   console.log('two', arguments)
 });
+
 
 var args = process.argv.slice(2);
 var argv = cli(args.length ? args : ['--set=a:b', '--set=c:d', '--one.set=a:b']);

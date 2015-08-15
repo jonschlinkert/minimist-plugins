@@ -7,21 +7,46 @@
 
 'use strict';
 
-var forward = require('forward-object');
+var Emitter = require('component-emitter');
+var plugins = require('plugins');
 
-module.exports = function (minimist) {
-  if (typeof minimist !== 'function') {
-    throw new TypeError('expected minimist to be a function.');
+function Plugins(minimist, options) {
+  if (!(this instanceof Plugins)) {
+    return new Plugins(minimist);
   }
+  Emitter.call(this);
+  this.options = options || {};
+  this.plugins = new plugins();
+  this.minimist = minimist;
+}
 
-  function proxy() {
-    return minimist.apply(minimist, arguments);
+Plugins.prototype = Emitter({
+  constructor: Plugins,
+
+  use: function (fn) {
+    this.plugins.use(fn(this));
+    return this;
+  },
+
+  parse: function (argv, opts, next) {
+    if (typeof opts === 'function') {
+      next = opts;
+      opts = null;
+    }
+    argv = this.minimist(argv, opts);
+    this.plugins.run(argv, function (err, args) {
+      if (err) return next(err);
+      args = Array.isArray(args) ? args[0] : args;
+      this.emit('end', args);
+      next(null, args);
+    }.bind(this));
+    return this;
   }
+});
 
-  proxy.use = function (fn) {
-    return (proxy = (fn(proxy) || proxy));
-  };
 
-  forward(proxy, minimist);
-  return proxy;
-};
+/**
+ * Expose `Plugins`
+ */
+
+module.exports = Plugins;
