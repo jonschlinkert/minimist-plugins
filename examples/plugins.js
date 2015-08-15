@@ -1,7 +1,11 @@
 var cli = require('..')(require('minimist'))
-  .use(function (parser) {
-    return parser;
+  .use(function (plugins) {
+    return function (argv, next) {
+      // do stuff to `argv`
+      next(null, argv);
+    };
   })
 
-var argv = cli(['--a=b']);
-console.log(argv);
+cli.parse(['--a=b'], function (err, argv) {
+  console.log(argv);
+});
