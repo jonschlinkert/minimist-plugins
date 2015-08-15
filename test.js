@@ -96,16 +96,16 @@ describe('minimist', function () {
   });
 
   it('should done callback be optional', function (done) {
-    var _cli = cli.parse(['a', 'b']);
-    assert.equal(typeof _cli.minimist, 'function');
+    var res = cli.parse(['a', 'b']);
+    assert.equal(typeof res.minimist, 'function');
     done();
   });
 
   it('should result have parsed `.argv` property', function (done) {
-    var _cli = cli.parse(['--foo=bar', '--baz=qux']);
-    assert.equal(typeof _cli.minimist, 'function');
-    assert.equal(_cli.argv.foo, 'bar');
-    assert.equal(_cli.argv.baz, 'qux');
+    var res = cli.parse(['--foo=bar', '--baz=qux']);
+    assert.equal(typeof res.minimist, 'function');
+    assert.equal(res.argv.foo, 'bar');
+    assert.equal(res.argv.baz, 'qux');
     done();
   });
 
@@ -117,10 +117,37 @@ describe('minimist', function () {
         next(null, argv);
       };
     });
-    var _cli = cli.parse(['--foo=bar', '--baz=qux']);
-    assert.equal(typeof _cli.minimist, 'function');
-    assert.equal(_cli.argv.foo, 'bar2');
-    assert.equal(_cli.argv.baz, 'qux2');
+    var res = cli.parse(['--foo=bar', '--baz=qux']);
+    assert.equal(typeof res.minimist, 'function');
+    assert.equal(res.argv.foo, 'bar2');
+    assert.equal(res.argv.baz, 'qux2');
     done();
   });
+
+  it('should merge options', function (done) {
+    cli = plugins(minimist, {a: 'b'});
+    var res = cli.parse(['--foo=bar'], {c: 'd'});
+    assert.equal(res.options.a, 'b');
+    assert.equal(res.options.c, 'd');
+    assert.equal(res.argv.foo, 'bar');
+    done();
+  });
+
+  it('should add/modify options from plugins', function (done) {
+    cli = plugins(minimist, {foo: 'bar'});
+    cli.use(function (self) {
+      return function (argv, next) {
+        self.options.foo = 'abc';
+        self.options.baz = 'qux';
+        next(null, argv);
+      };
+    });
+
+    cli.parse(['--abc=def'], function (err, argv) {
+      assert.equal(argv.abc, 'def');
+      assert.equal(cli.options.foo, 'abc');
+      assert.equal(cli.options.baz, 'qux');
+      done();
+    });
+  })
 });

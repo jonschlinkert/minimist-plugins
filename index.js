@@ -9,6 +9,7 @@
 
 var Emitter = require('component-emitter');
 var plugins = require('plugins');
+var merge = require('merge-deep');
 
 function Plugins(minimist, options) {
   if (!(this instanceof Plugins)) {
@@ -37,6 +38,7 @@ Plugins.prototype = Emitter({
       next = opts;
       opts = null;
     }
+    this.options = opts ? merge({}, this.options, opts) : this.options;
     next = typeof next === 'function' ? next : function noop () {};
     this.argv = this.minimist(argv, opts);
     this.plugins.run(this.argv, function (err, args) {
