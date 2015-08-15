@@ -100,4 +100,27 @@ describe('minimist', function () {
     assert.equal(typeof _cli.minimist, 'function');
     done();
   });
+
+  it('should result have parsed `.argv` property', function (done) {
+    var _cli = cli.parse(['--foo=bar', '--baz=qux']);
+    assert.equal(typeof _cli.minimist, 'function');
+    assert.equal(_cli.argv.foo, 'bar');
+    assert.equal(_cli.argv.baz, 'qux');
+    done();
+  });
+
+  it('should result have processed `.argv` property', function (done) {
+    cli.use(function () {
+      return function (argv, next) {
+        argv.foo = 'bar2';
+        argv.baz = 'qux2';
+        next(null, argv);
+      };
+    });
+    var _cli = cli.parse(['--foo=bar', '--baz=qux']);
+    assert.equal(typeof _cli.minimist, 'function');
+    assert.equal(_cli.argv.foo, 'bar2');
+    assert.equal(_cli.argv.baz, 'qux2');
+    done();
+  });
 });
