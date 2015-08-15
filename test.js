@@ -45,7 +45,7 @@ describe('minimist', function () {
     });
   });
 
-  it('should chain plugins:', function () {
+  it('should chain plugins:', function (done) {
     cli
       .use(function () {
         return function (argv) {
@@ -87,7 +87,7 @@ describe('minimist', function () {
   it('should emit `end` after all args are emitted:', function (done) {
     var i = 0;
     function set(key, value) {
-      return function (cli) {
+      return function () {
         return function (argv, next) {
           argv[key] = value;
           next(null, argv);
@@ -95,9 +95,9 @@ describe('minimist', function () {
       };
     }
 
-    cli.use(set('aaa', 'bbb'))
-    cli.use(set('ccc', 'ddd'))
-    cli.use(set('eee', 'fff'))
+    cli.use(set('aaa', 'bbb'));
+    cli.use(set('ccc', 'ddd'));
+    cli.use(set('eee', 'fff'));
 
     cli.on('end', function (argv) {
       assert.equal(argv.aaa, 'bbb');
@@ -196,14 +196,14 @@ describe('minimist', function () {
         return function (argv, next) {
           self.emit('custom1', argv.foo);
           i++;
-          next(null, argv)
+          next(null, argv);
         };
       })
       .use(function (self) {
         return function (argv, next) {
           self.emit('custom2', argv.foo);
           i++;
-          next(null, argv)
+          next(null, argv);
         };
       });
 
