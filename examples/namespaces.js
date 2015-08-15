@@ -1,21 +1,34 @@
-var App = require('./app').App;
-var app = new App();
-var one = new App();
-var two = new App();
+'use strict';
 
 var minimist = require('minimist');
-var methods = require('minimist-methods');
-var cli = require('..')(minimist)
+var plugins = require('..');
+var n = require('minimist-methods');
+var App = require('./app').App;
+var ctx = new App();
+
+var cli = plugins(minimist, {})
   .use(require('minimist-expand'))
-  .use(require('minimist-events'))
-  .use(methods(app))
-  .use(methods.namespace('one', one))
-  .use(methods.namespace('two', two))
+  .use(require('minimist-events')())
+  .use(n('assemble', new App()))
+  .use(n('composer', new App()))
+  .use(n('generate', new App()))
+  .use(n('scaffold', new App()))
+  .use(n('snippets', new App()))
+  .use(n('template', new App()))
 
-cli.on('set', console.log.bind(console, '[set]'));
+cli.scaffold.on('set', function () {
+  console.log('[assemble] set');
+});
 
-var args = process.argv.slice(2);
-var argv = cli(args.length ? args : ['--set=a:b', '--set=c:d', '--one.set=a:b']);
+cli.assemble.on('set', function () {
+  console.log('[assemble] set');
+});
 
-console.log(app);
-//=> { _: [], set: [ { a: 'b' }, { c: 'd' } ] }
+cli.snippets.on('set', function () {
+  console.log('[snippets] set');
+});
+
+cli.parse(process.argv.slice(2), function (err, res) {
+  console.log(res);
+});
+
