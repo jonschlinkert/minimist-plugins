@@ -1,10 +1,9 @@
 'use strict';
 
 var minimist = require('minimist');
-var plugins = require('..');
 var n = require('minimist-methods');
 var App = require('./app').App;
-var ctx = new App();
+var plugins = require('..');
 
 var cli = plugins(minimist, {})
   .use(require('minimist-expand'))
@@ -16,19 +15,24 @@ var cli = plugins(minimist, {})
   .use(n('snippets', new App()))
   .use(n('template', new App()))
 
-cli.scaffold.on('set', function () {
-  console.log('[assemble] set');
+cli.scaffold.on('set', function (val) {
+  console.log('[assemble] set', val);
 });
 
-cli.assemble.on('set', function () {
-  console.log('[assemble] set');
+cli.assemble.on('set', function (val) {
+  console.log('[assemble] set', val);
 });
 
-cli.snippets.on('set', function () {
-  console.log('[snippets] set');
+cli.snippets.on('set', function (val) {
+  console.log('[snippets] set', val);
 });
 
-cli.parse(process.argv.slice(2), function (err, res) {
+var argv = process.argv.slice(2);
+if (!argv.length) {
+  argv = ['--snippets.set=foo.bar:a,b,c'];
+}
+
+cli.parse(argv, function (err, res) {
   console.log(res);
 });
 
