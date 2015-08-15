@@ -91,4 +91,10 @@ describe('minimist', function () {
       done();
     });
   });
+
+  it('should done callback be optional', function (done) {
+    var _cli = cli.parse(['a', 'b']);
+    assert.equal(typeof _cli.minimist, 'function');
+    done();
+  });
 });

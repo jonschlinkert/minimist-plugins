@@ -37,6 +37,7 @@ Plugins.prototype = Emitter({
       next = opts;
       opts = null;
     }
+    next = typeof next === 'function' ? next : function noop () {};
     argv = this.minimist(argv, opts);
     this.plugins.run(argv, function (err, args) {
       if (err) return next(err);
