@@ -12,22 +12,25 @@ describe('minimist', function () {
     cli = plugins(minimist);
   });
 
-  it('should parse arguments without any plugins:', function () {
+  it('should parse arguments without any plugins:', function (done) {
     cli.parse(['--a', '--b'], function (err, argv) {
       assert.equal(argv.a, true);
       assert.equal(argv.b, true);
+      done();
     });
   });
 
-  it('should chain plugins:', function () {
+  it('should chain plugins:', function (done) {
     cli.use(function () {
-        return function (argv) {
+        return function (argv, next) {
           argv.foo = 'bar';
+          next(null, argv);
         };
       })
       .use(function () {
-        return function (argv) {
+        return function (argv, next) {
           argv.baz = 'quux';
+          next(null, argv);
         };
       });
 
@@ -36,18 +39,21 @@ describe('minimist', function () {
       assert.equal(argv.baz === 'quux', true);
       assert.equal(argv.a === true, true);
       assert.equal(argv.b === true, true);
+      done();
     });
   });
 
-  it('should expose args on the `argv` object:', function () {
+  it('should expose args on the `argv` object:', function (done) {
     cli.parse(['a', 'b', 'c'], function (err, res) {
       assert.deepEqual(res._, ['a', 'b', 'c']);
+      done();
     });
   });
 
-  it('should expose options on the `argv` object:', function () {
+  it('should expose options on the `argv` object:', function (done) {
     cli.parse(['a', 'b', 'c', '--foo=bar'], function (err, res) {
       assert.equal(res.foo, 'bar');
+      done();
     });
   });
 
