@@ -21,6 +21,21 @@ describe('minimist', function () {
     done();
   });
 
+  it('should pass error from async plugins', function (done) {
+    cli.use(function () {
+      return function (argv, next) {
+        argv.foo = 'bar';
+        next(new Error('foo bar'));
+      };
+    });
+    cli.parse(['--foo=bar'], function (err, argv) {
+      assert.ifError(!err);
+      assert.ok(!argv);
+      assert.equal(err.message, 'foo bar');
+      done();
+    });
+  });
+
   it('should parse arguments without any plugins:', function (done) {
     cli.parse(['--a', '--b'], function (err, argv) {
       assert.ifError(err);
