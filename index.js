@@ -9,13 +9,18 @@
 
 var Emitter = require('component-emitter');
 var plugins = require('plugins');
+var merge = require('merge-deep');
 
 function Plugins(minimist, options) {
   if (!(this instanceof Plugins)) {
-    return new Plugins(minimist);
+    return new Plugins(minimist, options);
   }
+  if (typeof minimist !== 'function') {
+    throw new TypeError('expect `minimist` be function');
+  }
+
   Emitter.call(this);
-  this.options = options || {};
+  this.options = typeof options === 'object' ? options : {};
   this.plugins = new plugins();
   this.minimist = minimist;
 }
@@ -33,8 +38,10 @@ Plugins.prototype = Emitter({
       next = opts;
       opts = null;
     }
-    argv = this.minimist(argv, opts);
-    this.plugins.run(argv, function (err, args) {
+    this.options = opts ? merge({}, this.options, opts) : this.options;
+    next = typeof next === 'function' ? next : function noop () {};
+    this.argv = this.minimist(argv, opts);
+    this.plugins.run(this.argv, function (err, args) {
       if (err) return next(err);
       args = Array.isArray(args) ? args[0] : args;
       this.emit('end', args);

@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "component-emitter": "^1.2.0",
+    "merge-deep": "^2.0.0",
     "plugins": "^0.4.0"
   },
   "devDependencies": {
