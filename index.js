@@ -14,8 +14,12 @@ function Plugins(minimist, options) {
   if (!(this instanceof Plugins)) {
     return new Plugins(minimist);
   }
+  if (typeof minimist !== 'function') {
+    throw new TypeError('expect `minimist` be function');
+  }
+
   Emitter.call(this);
-  this.options = options || {};
+  this.options = typeof options === 'object' ? options : {};
   this.plugins = new plugins();
   this.minimist = minimist;
 }
