@@ -46,7 +46,8 @@ describe('minimist', function () {
   });
 
   it('should chain plugins:', function () {
-    cli.use(function () {
+    cli
+      .use(function () {
         return function (argv) {
           argv.foo = 'bar';
         };
@@ -130,17 +131,25 @@ describe('minimist', function () {
   });
 
   it('should result have processed `.argv` property', function (done) {
-    cli.use(function () {
-      return function (argv, next) {
-        argv.foo = 'bar2';
-        argv.baz = 'qux2';
-        next(null, argv);
-      };
-    });
+    cli
+      .use(function () {
+        return function (argv, next) {
+          argv.foo = 'bar2';
+          argv.baz = 'qux2';
+          next(null, argv);
+        };
+      })
+      .use(function () {
+        return function (argv, next) {
+          argv.qux = 'jon2';
+          next(null, argv);
+        };
+      });
     var res = cli.parse(['--foo=bar', '--baz=qux']);
     assert.equal(typeof res.minimist, 'function');
     assert.equal(res.argv.foo, 'bar2');
     assert.equal(res.argv.baz, 'qux2');
+    assert.equal(res.argv.qux, 'jon2');
     done();
   });
 
@@ -155,39 +164,62 @@ describe('minimist', function () {
 
   it('should add/modify options from plugins', function (done) {
     cli = plugins(minimist, {foo: 'bar'});
-    cli.use(function (self) {
-      return function (argv, next) {
-        self.options.foo = 'abc';
-        self.options.baz = 'qux';
-        next(null, argv);
-      };
-    });
+    cli
+      .use(function (self) {
+        return function (argv, next) {
+          self.options.foo = 'abc';
+          self.options.baz = 'qux';
+          next(null, argv);
+        };
+      })
+      .use(function (self) {
+        return function (argv, next) {
+          self.options.qux = 'jon';
+          next(null, argv);
+        };
+      });
 
     cli.parse(['--abc=def'], function (err, argv) {
       assert.ifError(err);
       assert.equal(argv.abc, 'def');
       assert.equal(cli.options.foo, 'abc');
       assert.equal(cli.options.baz, 'qux');
+      assert.equal(cli.options.qux, 'jon');
       done();
     });
   });
 
   it('should be able to emit events from plugins', function (done) {
     var i = 0;
-    cli.use(function (self) {
-      return function (argv, next) {
-        self.emit('custom', argv.foo);
+    cli
+      .use(function (self) {
+        return function (argv, next) {
+          self.emit('custom1', argv.foo);
+          i++;
+          next(null, argv)
+        };
+      })
+      .use(function (self) {
+        return function (argv, next) {
+          self.emit('custom2', argv.foo);
+          i++;
+          next(null, argv)
+        };
+      });
+
+    cli
+      .on('custom1', function (foo) {
+        assert.equal(foo, 'bar');
         i++;
-        next(null, argv)
-      };
-    });
-    cli.on('custom', function (foo) {
-      assert.equal(foo, 'bar');
-      i++;
-    });
+      })
+      .on('custom2', function (foo) {
+        assert.equal(foo, 'bar');
+        i++;
+      });
+
     cli.parse(['--foo=bar'], function (err, argv) {
       assert.ifError(err);
-      assert.equal(i, 2);
+      assert.equal(i, 4);
       assert.equal(argv.foo, 'bar');
       done();
     });
