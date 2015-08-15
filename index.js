@@ -12,7 +12,7 @@ var plugins = require('plugins');
 
 function Plugins(minimist, options) {
   if (!(this instanceof Plugins)) {
-    return new Plugins(minimist);
+    return new Plugins(minimist, options);
   }
   if (typeof minimist !== 'function') {
     throw new TypeError('expect `minimist` be function');
